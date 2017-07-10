@@ -85,6 +85,8 @@ Flags support both public and private variables.
 
 Flags support fetching secrets or config on load. Currently supports HashiCorp Vault and Amazon S3.
 
+NB! Secrets only work with String variables.
+
 ```
 --mySecretVariableFromVault secret:vault://secret/foo:value
 --mySecretVariableFromS3 secret:s3://bucket/foo/secret
