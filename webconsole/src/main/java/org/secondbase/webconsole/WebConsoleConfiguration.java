@@ -5,7 +5,7 @@ import org.secondbase.flags.Flag;
 /**
  * Configuration parameters for the WebConsole.
  */
-public class WebConsoleConfiguration {
+public final class WebConsoleConfiguration {
     @Flag(name = "enable-webconsole", description = "Start the web console")
     public static boolean enableWebConsole = false;
     @Flag(

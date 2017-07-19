@@ -18,7 +18,7 @@ import org.secondbase.webconsole.widget.Widget;
 /**
  * A webserver for hosting secondbase servlets using Sun's {@link HttpServer}.
  */
-public class HttpWebConsole implements SecondBaseModule, WebConsole {
+public final class HttpWebConsole implements SecondBaseModule, WebConsole {
 
     private static final Logger LOG = Logger.getLogger(HttpWebConsole.class.getName());
     private final HttpServer server;
