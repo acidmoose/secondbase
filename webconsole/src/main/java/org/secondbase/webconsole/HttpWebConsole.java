@@ -24,8 +24,7 @@ public class HttpWebConsole implements SecondBaseModule, WebConsole {
     private final HttpServer server;
     private int port;
 
-    private final ServiceLoader<Widget> widgets
-            = ServiceLoader.load(Widget.class);
+    private final ServiceLoader<Widget> widgets = ServiceLoader.load(Widget.class);
 
     /**
      * Basic /health endpoint, returning 200 OK.
