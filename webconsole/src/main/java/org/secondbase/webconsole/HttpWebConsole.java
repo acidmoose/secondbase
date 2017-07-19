@@ -27,11 +27,13 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
     private final ServiceLoader<Widget> widgets = ServiceLoader.load(Widget.class);
 
     /**
-     * Basic /health endpoint, returning 200 OK.
+     * Basic /healthz endpoint, returning 200 OK.
      */
-    private class HealthzHandler implements HttpHandler {
+    private final class HealthzHandler implements HttpHandler {
+        private final String healthyMsg = "Healthy";
+
         public void handle(final HttpExchange t) throws IOException {
-            final byte [] response = "Healthy".getBytes();
+            final byte [] response = healthyMsg.getBytes();
             t.sendResponseHeaders(200, response.length);
             final OutputStream os = t.getResponseBody();
             os.write(response);
@@ -41,7 +43,7 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
 
     /**
      * Set up the webconsole using port from {@link WebConsoleConfiguration}.
-     * @throws IOException if server can't start on a given port.
+     * @throws IOException if server can't start on a given port
      */
     public HttpWebConsole() throws IOException {
         server = HttpServer.create();
@@ -50,7 +52,7 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
 
     /**
      * Load WebConsole Flags and set the secondbase webconsole to "this".
-     * @param secondBase module coordinator.
+     * @param secondBase module coordinator
      */
     @Override
     public void load(final SecondBase secondBase) {
@@ -64,10 +66,10 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
             return;
         }
         port = (WebConsoleConfiguration.port == 0) ? getFreePort() : WebConsoleConfiguration.port;
-        final int USE_SYSTEM_DEFAULT_BACKLOG = 0;
+        final int useSystemDefaultBacklog = 0;
         server.bind(
                 new InetSocketAddress(port),
-                USE_SYSTEM_DEFAULT_BACKLOG);
+                useSystemDefaultBacklog);
         LOG.info("Starting webconsole on port " + port);
         for (final Widget widget : widgets) {
             LOG.info("Adding webconsole widget " + widget.getPath());
@@ -103,11 +105,7 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
     }
 
     /**
-     * Find a free local port. Strictly speaking I suspect this
-     * method of doing things has all sorts of race conditions but
-     * since ports allocated this way have a tendency to increment on
-     * the platforms I have tested it on it should for the most part
-     * work.
+     * Find a free local port.
      *
      * @return a free local port number.
      * @throws RuntimeException on error allocating port.
@@ -127,7 +125,7 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
                     socket.close();
                 }
             } catch (final IOException e) {
-                LOG.warning("Failed to close server socket used for finding free port");
+                LOG.log(Level.WARNING, "Failed to close server socket used for finding free port");
             }
         }
     }

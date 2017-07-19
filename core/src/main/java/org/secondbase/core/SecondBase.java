@@ -70,7 +70,7 @@ public class SecondBase {
                     try {
                         webConsole.shutdown();
                     } catch (final IOException e) {
-                        LOG.log(Level.SEVERE, "Could not shutdown webconsole.", e);
+                        System.err.println("Could not shutdown webconsole: " + e.getMessage());
                     }
                 }
             }

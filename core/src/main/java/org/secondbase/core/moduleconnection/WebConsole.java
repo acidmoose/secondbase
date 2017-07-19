@@ -3,8 +3,7 @@ package org.secondbase.core.moduleconnection;
 import java.io.IOException;
 
 /**
- * Implemented by webconsole implementation so the core module can talk to the webconsole without
- * knowing about implementation details and having to include its dependencies.
+ * A web server to host SecondBase modules.
  */
 public interface WebConsole {
     /**
