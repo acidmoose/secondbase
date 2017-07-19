@@ -7,19 +7,25 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.secondbase.core.SecondBase;
 import org.secondbase.core.config.SecondBaseModule;
+import org.secondbase.core.moduleconnection.WebConsole;
+import org.secondbase.webconsole.widget.Widget;
 
 /**
  * A webserver for hosting secondbase servlets using Sun's {@link HttpServer}.
  */
-public class HttpWebConsole implements SecondBaseModule, org.secondbase.core.moduleconnection.WebConsole {
+public class HttpWebConsole implements SecondBaseModule, WebConsole {
 
     private static final Logger LOG = Logger.getLogger(HttpWebConsole.class.getName());
     private final HttpServer server;
     private int port;
+
+    private final ServiceLoader<Widget> widgets
+            = ServiceLoader.load(Widget.class);
 
     /**
      * Basic /health endpoint, returning 200 OK.
@@ -64,6 +70,10 @@ public class HttpWebConsole implements SecondBaseModule, org.secondbase.core.mod
                 new InetSocketAddress(port),
                 USE_SYSTEM_DEFAULT_BACKLOG);
         LOG.info("Starting webconsole on port " + port);
+        for (final Widget widget : widgets) {
+            LOG.info("Adding webconsole widget " + widget.getPath());
+            server.createContext(widget.getPath(), widget.getServlet());
+        }
         server.start();
     }
 
