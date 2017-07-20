@@ -12,5 +12,5 @@ public final class WebConsoleConfiguration {
             name = "webconsole-port",
             description = "The port used by the webconsole (default 0 will select an available " +
                     "port between X and Y)")
-    public static int port = 0;
+    public static int port = 5060;
 }
