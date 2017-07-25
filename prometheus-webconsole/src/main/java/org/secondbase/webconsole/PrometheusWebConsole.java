@@ -22,6 +22,11 @@ public final class PrometheusWebConsole implements SecondBaseModule, Widget {
     }
 
     @Override
+    public void init() {
+
+    }
+
+    @Override
     public String getPath() {
         return PrometheusWebConsoleConfiguration.endpoint;
     }
