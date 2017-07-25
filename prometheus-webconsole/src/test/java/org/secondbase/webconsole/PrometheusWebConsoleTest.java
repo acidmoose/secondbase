@@ -16,9 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-/**
- * Test metrics registry parsing for http endpoint.
- */
 @RunWith(MockitoJUnitRunner.class)
 public class PrometheusWebConsoleTest {
 
