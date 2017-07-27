@@ -95,7 +95,7 @@ public final class Flags {
     private final List<Object> objects = new ArrayList<>();
     private final List<Class<?>> classes = new ArrayList<>();
 
-    private final SecretHandler[] secretHandlers;
+    private SecretHandler[] secretHandlers;
 
     /**
      * Standard constructor initialising a flags object without secret handlers.
@@ -109,6 +109,14 @@ public final class Flags {
      * @param secretHandlers to use
      */
     public Flags(final SecretHandler[] secretHandlers) {
+        this.secretHandlers = secretHandlers;
+    }
+
+    /**
+     * Set SecretHandlers for Flags
+     * @param secretHandlers array of {@link SecretHandler} implementations
+     */
+    public void setSecretHandlers(final SecretHandler[] secretHandlers) {
         this.secretHandlers = secretHandlers;
     }
 
