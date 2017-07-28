@@ -78,7 +78,7 @@ public class HelloAll {
         final Widget[] widgets = {prometheusWidget};
         final HttpWebConsole webConsole = new HttpWebConsole(widgets);
 
-        final ConsulModule consul = new ConsulModule(ConsulModule.createLocalhostConsulClient());
+        final ConsulModule consul = new ConsulModule();
         final ConsulRegistrationMetricsWebConsole registerMetrics
                 = new ConsulRegistrationMetricsWebConsole(webConsole, consul);
 
