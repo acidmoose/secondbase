@@ -25,16 +25,17 @@ public class HelloAll {
     @Flag(name="counter")
     private static int counter = 1;
 
+    private static final Logger log = LoggerFactory.getLogger(HelloAll.class.getName());
     private static final Counter mycounter = Counter.build("mycounter", "a counter").register();
 
-    private static final Logger LOG = LoggerFactory.getLogger(HelloAll.class.getName());
+    private HelloAll() {}
 
     /**
      * Start HelloAll service.
      */
-    public HelloAll() throws IOException {
+    public static void startHelloAllService() throws IOException {
         mycounter.inc(counter);
-        LOG.info(var);
+        log.info(var);
 
         // Start a basic http server with a single endpoint.
         final HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
@@ -64,26 +65,34 @@ public class HelloAll {
                 "--datacenter=local",
 
                 // Webconsole settings
-                "--webconsole-port=8001"
+                "--webconsole-port=8001",
+
+                // HelloAll settings
+                "--variable=Hello, World!",
+                "--counter=42"
         };
 
         final SecondBaseModule jsonLogger = new JsonLoggerModule();
 
-        final Widget prometheusWidget = new PrometheusWebConsole();
+        final PrometheusWebConsole prometheusWidget = new PrometheusWebConsole();
         final Widget[] widgets = {prometheusWidget};
-        final HttpWebConsole webconsole = new HttpWebConsole(widgets);
+        final HttpWebConsole webConsole = new HttpWebConsole(widgets);
 
         final ConsulModule consul = new ConsulModule(ConsulModule.createLocalhostConsulClient());
         final ConsulRegistrationMetricsWebConsole registerMetrics
-                = new ConsulRegistrationMetricsWebConsole(webconsole, consul);
+                = new ConsulRegistrationMetricsWebConsole(webConsole, consul);
 
-        // Put jsonLogger first, since it can define how the other modules do logging.
-        final SecondBaseModule[] modules = {jsonLogger, consul, webconsole, registerMetrics};
+        final SecondBaseModule[] modules = {
+                jsonLogger, // Put jsonLogger first, since it can define how the other modules log.
+                consul,
+                prometheusWidget,
+                webConsole,
+                registerMetrics};
 
         final Flags flags = new Flags().loadOpts(HelloAll.class);
 
         new SecondBase(realArgs, modules, flags);
 
-        new HelloAll();
+        startHelloAllService();
     }
 }
