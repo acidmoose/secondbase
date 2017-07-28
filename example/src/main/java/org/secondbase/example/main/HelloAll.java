@@ -37,9 +37,16 @@ public class HelloAll {
         mycounter.inc(counter);
         log.info(var);
 
-        // Start a basic http server with a single endpoint.
+        // Start a basic http server with a health check and a service endpoint.
         final HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
-        server.createContext("/myservice", httpExchange -> {
+        server.createContext("/healthcheck", httpExchange -> {
+            final byte[] response = "This is my service health check".getBytes();
+            httpExchange.sendResponseHeaders(200, response.length);
+            final OutputStream os = httpExchange.getResponseBody();
+            os.write(response);
+            os.close();
+        });
+        server.createContext("/", httpExchange -> {
             final byte[] response = "This is my service response".getBytes();
             httpExchange.sendResponseHeaders(200, response.length);
             final OutputStream os = httpExchange.getResponseBody();
@@ -58,7 +65,7 @@ public class HelloAll {
                 // Consul settings (register HelloAll service)
                 "--consul-host=localhost:8500",
                 "--service-port=8000",
-                "--consul-health-check-path=/myservice",
+                "--consul-health-check-path=/healthcheck",
                 "--consul-tags=tagone,tagtwo",
 
                 // Logging settings
