@@ -1,8 +1,12 @@
 package org.secondbase.example.main;
 
+import com.sun.net.httpserver.HttpServer;
 import io.prometheus.client.Counter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import org.secondbase.consul.ConsulModule;
+import org.secondbase.consul.registration.ConsulRegistrationMetricsWebConsole;
 import org.secondbase.core.SecondBase;
 import org.secondbase.core.SecondBaseException;
 import org.secondbase.core.config.SecondBaseModule;
@@ -21,21 +25,35 @@ public class HelloAll {
     @Flag(name="counter")
     private static int counter = 1;
 
+    private static final Counter mycounter = Counter.build("mycounter", "a counter").register();
+
     private static final Logger LOG = LoggerFactory.getLogger(HelloAll.class.getName());
 
-    private HelloAll() {}
+    /**
+     * Start HelloAll service.
+     */
+    public HelloAll() throws IOException {
+        // Start a basic http server with a single endpoint.
+        final HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
+        server.createContext("/myservice", httpExchange -> {
+            final byte[] response = "This is my service response".getBytes();
+            httpExchange.sendResponseHeaders(200, response.length);
+            final OutputStream os = httpExchange.getResponseBody();
+            os.write(response);
+            os.close();
+        });
+    }
 
     public static void main(final String[] args) throws SecondBaseException, IOException {
-
         final String[] realArgs = {
                 // SecondBase settings
                 "--service-name=HelloAll",
                 "--service-environment=testing",
 
-                // Consul settings
+                // Consul settings (register HelloAll service)
                 "--consul-host=localhost:8500",
                 "--service-port=8000",
-                "--consul-health-check-path=/healthz",
+                "--consul-health-check-path=/myservice",
                 "--consul-tags=tagone,tagtwo",
 
                 // Logging settings
@@ -48,14 +66,15 @@ public class HelloAll {
         // Set up json logger module first, since it can define how the other modules do logging.
         final SecondBaseModule jsonLogger = new JsonLoggerModule();
 
-        final Counter mycounter = Counter.build("mycounter", "a counter").register();
-
         final Widget prometheusWidget = new PrometheusWebConsole();
         final Widget[] widgets = {prometheusWidget};
+        final HttpWebConsole webconsole = new HttpWebConsole(widgets);
 
-        final SecondBaseModule consul = new ConsulModule();
-        final SecondBaseModule webconsole = new HttpWebConsole(widgets);
-        final SecondBaseModule[] modules = {consul, webconsole, jsonLogger};
+        final ConsulModule consul = new ConsulModule(ConsulModule.createLocalhostConsulClient());
+        final ConsulRegistrationMetricsWebConsole registerMetrics
+                = new ConsulRegistrationMetricsWebConsole(webconsole, consul);
+
+        final SecondBaseModule[] modules = {consul, webconsole, jsonLogger, registerMetrics};
 
         final Flags flags = new Flags().loadOpts(HelloAll.class);
 
