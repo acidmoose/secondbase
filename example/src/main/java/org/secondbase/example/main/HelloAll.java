@@ -33,6 +33,9 @@ public class HelloAll {
      * Start HelloAll service.
      */
     public HelloAll() throws IOException {
+        mycounter.inc(counter);
+        LOG.info(var);
+
         // Start a basic http server with a single endpoint.
         final HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
         server.createContext("/myservice", httpExchange -> {
@@ -42,6 +45,7 @@ public class HelloAll {
             os.write(response);
             os.close();
         });
+        server.start();
     }
 
     public static void main(final String[] args) throws SecondBaseException, IOException {
@@ -80,8 +84,6 @@ public class HelloAll {
 
         new SecondBase(realArgs, modules, flags);
 
-        mycounter.inc(counter);
-
-        LOG.info(var);
+        new HelloAll();
     }
 }
