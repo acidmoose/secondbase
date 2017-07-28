@@ -113,14 +113,6 @@ public final class Flags {
     }
 
     /**
-     * Set SecretHandlers for Flags
-     * @param secretHandlers array of {@link SecretHandler} implementations
-     */
-    public void setSecretHandlers(final SecretHandler[] secretHandlers) {
-        this.secretHandlers = secretHandlers;
-    }
-
-    /**
      * Load a class that contains Flag annotations.
      *
      * @param c - the class to load options from

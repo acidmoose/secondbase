@@ -17,9 +17,6 @@ import org.secondbase.webconsole.widget.Widget;
  * SecondBase implementation which will set up all submodules
  */
 public class SecondBase {
-    private final SecretHandler s3handler = new S3SecretHandler();
-    private final SecretHandler vaulthandler = new VaultSecretHandler();
-
     /**
      * Initiates {@link org.secondbase.core.SecondBase} with all {@link SecondBaseModule} available.
      * @param args command line arguments to be parsed
@@ -27,13 +24,18 @@ public class SecondBase {
      * @throws SecondBaseException if {@link org.secondbase.core.SecondBase} fails to start
      */
     public SecondBase(final String[] args) throws IOException, SecondBaseException {
-        new SecondBase(args, new Flags());
+        new SecondBase(
+                args,
+                new Flags(
+                        new SecretHandler[]{
+                                new S3SecretHandler(),
+                                new VaultSecretHandler()}));
     }
 
     /**
      * Initiates {@link org.secondbase.core.SecondBase} with all {@link SecondBaseModule} available.
      * @param args command line arguments to be parsed
-     * @param flags preloaded {@link Flags}
+     * @param flags custom {@link Flags}. NB! Needs custom setup of {@link SecretHandler[]}
      * @throws IOException if WebConsole fails to start
      * @throws SecondBaseException if {@link org.secondbase.core.SecondBase} fails to start
      */
@@ -41,7 +43,6 @@ public class SecondBase {
             final String[] args,
             final Flags flags)
             throws IOException, SecondBaseException {
-        flags.setSecretHandlers(new SecretHandler[]{s3handler, vaulthandler});
         final SecondBaseModule jsonLogger = new JsonLoggerModule();
 
         final Widget prometheusWidget = new PrometheusWebConsole();
