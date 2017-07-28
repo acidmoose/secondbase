@@ -64,10 +64,9 @@ public class HelloAll {
                 "--datacenter=local",
 
                 // Webconsole settings
-                "--webconsole-port=8000"
+                "--webconsole-port=8001"
         };
 
-        // Set up json logger module first, since it can define how the other modules do logging.
         final SecondBaseModule jsonLogger = new JsonLoggerModule();
 
         final Widget prometheusWidget = new PrometheusWebConsole();
@@ -78,7 +77,8 @@ public class HelloAll {
         final ConsulRegistrationMetricsWebConsole registerMetrics
                 = new ConsulRegistrationMetricsWebConsole(webconsole, consul);
 
-        final SecondBaseModule[] modules = {consul, webconsole, jsonLogger, registerMetrics};
+        // Put jsonLogger first, since it can define how the other modules do logging.
+        final SecondBaseModule[] modules = {jsonLogger, consul, webconsole, registerMetrics};
 
         final Flags flags = new Flags().loadOpts(HelloAll.class);
 
