@@ -48,5 +48,5 @@ jobs:
             echo $GPG_KEY | base64 --decode > signing-key
             gpg --pinentry-mode loopback --passphrase $GPG_PASSPHRASE --import signing-key
             shred signing-key
-            mvn -s .circleci/settings.xml -DskipTests -DperformRelease deploy
+            mvn -s .circleci/settings.xml -DskipTests -release deploy
           fi
